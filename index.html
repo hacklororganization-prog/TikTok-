@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تيك توك تونس - المسابقة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --accent: #ff0050;
+            --gold: #ffcc00;
+            --bg: #0a0d14;
+            --card: #161b26;
+            --text: #fff;
+            --success: #00ff9d;
+            --error: #ff4757;
+            --warning: #ffaa00;
+            --bank: #9c27b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* شاشة الترحيب */
+        .screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-message {
+            color: #b0b8cc;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            max-width: 300px;
+        }
+        
+        .name-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #1e2433;
+            border: 1px solid #333;
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .name-input:focus {
+            border-color: var(--primary);
+        }
+        
+        .warning-note {
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--warning);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-width: 300px;
+            font-size: 0.8rem;
+        }
+        
+        /* التطبيق الرئيسي */
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            display: none;
+        }
+        
+        header {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-status {
+            color: var(--success);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .points-display {
+            background: rgba(255,204,0,0.1);
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--gold);
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .points-display .points {
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+        
+        /* بنك التوفير */
+        .savings-bank {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid var(--bank);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bank-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bank-header i {
+            color: var(--bank);
+            font-size: 1.5rem;
+        }
+        
+        .bank-header h3 {
+            color: var(--bank);
+            font-size: 1.3rem;
+        }
+        
+        .bank-amount {
+            color: var(--bank);
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .bank-progress {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .bank-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--bank), #d500f9);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .bank-info {
+            background: rgba(156, 39, 176, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .bank-timer {
+            color: var(--primary);
+            font-weight: 700;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        /* جائزة اليوم */
+        .daily-prize {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid var(--gold);
+            text-align: center;
+        }
+        
+        .prize-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .prize-header i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+        
+        .prize-header h3 {
+            color: var(--gold);
+            font-size: 1.3rem;
+        }
+        
+        .day-info {
+            background: rgba(0, 242, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .day-info .day {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .prize-amount {
+            color: var(--success);
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+        
+        .contest-number {
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px dashed var(--primary);
+        }
+        
+        .prize-instructions {
+            background: rgba(255, 170, 0, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        /* المهام */
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .tasks-progress {
+            background: rgba(0, 242, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .task-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-right: 5px solid var(--accent);
+            transition: all 0.3s;
+        }
+        
+        .task-card.completed {
+            border-right-color: var(--success);
+            opacity: 0.7;
+        }
+        
+        .task-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(0, 242, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        
+        .task-details {
+            flex: 1;
+        }
+        
+        .task-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+        
+        .task-points {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        
+        .task-hint {
+            font-size: 0.8rem;
+            color: #c0c8dd;
+            margin-top: 3px;
+        }
+        
+        /* الأزرار */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 80, 0.3);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+        
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+        }
+        
+        .btn-bank {
+            background: var(--bank);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            min-width: 60px;
+        }
+        
+        /* المودالات */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .modal-box {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid var(--primary);
+            text-align: center;
+            animation: modalAppear 0.3s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .modal-text {
+            color: #b0b8cc;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .verification-hint {
+            background: rgba(255, 170, 0, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .question-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .option-btn {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.1);
+        }
+        
+        .share-code-container {
+            background: rgba(0, 242, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px dashed var(--primary);
+        }
+        
+        .share-code {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin: 10px 0;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            margin: 15px 0;
+            transition: border-color 0.3s;
+        }
+        
+        .text-input:focus {
+            border-color: var(--primary);
+        }
+        
+        /* الإشعارات */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .toast {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-right: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideUp 0.3s;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .toast-success {
+            border-right-color: var(--success);
+        }
+        
+        .toast-error {
+            border-right-color: var(--error);
+        }
+        
+        .toast-warning {
+            border-right-color: var(--warning);
+        }
+        
+        .toast-info {
+            border-right-color: var(--primary);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* الدينار التونسي */
+        .tnd-symbol {
+            font-weight: 900;
+            color: var(--success);
+        }
+        
+        .amount-large {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--success);
+            text-shadow: 0 2px 10px rgba(0, 255, 157, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- شاشة الترحيب -->
+<div id="welcome-screen" class="screen">
+    <div class="logo">تيك توك تونس</div>
+    <div class="welcome-message">أدخل اسمك للانضمام للمسابقة والبدء في جمع النقاط</div>
+    <input type="text" id="user-name" class="name-input" placeholder="اسمك الكامل" maxlength="20">
+    <button onclick="login()" class="btn btn-primary" style="width: 250px; padding: 15px;">
+        <i class="fas fa-sign-in-alt"></i> دخول
+    </button>
+    <div class="warning-note"><i class="fas fa-exclamation-triangle"></i> الاسم سيتم حفظه نهائياً</div>
+</div>
+
+<!-- التطبيق الرئيسي -->
+<div class="app-container" id="main-app">
+    <header>
+        <div>
+            <h2 id="name-tag">زائر</h2>
+            <div class="user-status">
+                <i class="fas fa-circle" style="font-size: 0.6rem;"></i>
+                <span id="user-status-text">متصل</span>
+            </div>
+        </div>
+        <div class="points-display">
+            <div class="points" id="points-count">0</div>
+            <div>نقطة</div>
+        </div>
+    </header>
+
+    <!-- بنك التوفير -->
+    <div class="savings-bank">
+        <div class="bank-header">
+            <i class="fas fa-piggy-bank"></i>
+            <h3>بنك التوفير الأسبوعي</h3>
+        </div>
+        <div class="bank-amount" id="bank-amount">0 <span class="tnd-symbol">دينار</span></div>
+        <div class="bank-progress">
+            <div class="bank-progress-fill" id="bank-progress-fill"></div>
+        </div>
+        <div class="bank-info">
+            <div>يحتفظ بـ 50% من نقاط المهام</div>
+            <div>فرصة الفوز: <span style="color: var(--bank); font-weight: 700;">50%</span> في نهاية الأسبوع</div>
+        </div>
+        <div class="bank-timer" id="bank-timer">ينتهي بعد: --</div>
+        <button onclick="checkBankWinner()" class="btn btn-bank" style="width: 100%;" id="check-bank-btn" disabled>
+            <i class="fas fa-coins"></i> تحقق من الفوز
+        </button>
+    </div>
+
+    <!-- جائزة اليوم -->
+    <div class="daily-prize">
+        <div class="prize-header">
+            <i class="fas fa-gift"></i>
+            <h3>جائزة اليوم</h3>
+        </div>
+        <div class="day-info">
+            <div class="day" id="day-name">اليوم: الأحد</div>
+        </div>
+        <div class="prize-amount" id="prize-amount">500.000 <span class="tnd-symbol">دينار</span></div>
+        <div class="contest-number">رقم المسابقة: <span id="contest-number">85700</span></div>
+        <div class="prize-instructions"><i class="fas fa-info-circle"></i> أكمل المهام للتحقق من الفوز</div>
+        <button onclick="checkIfWinner()" class="btn btn-gold" style="width: 100%;" id="check-winner-btn">
+            <i class="fas fa-trophy"></i> تحقق إذا فزت
+        </button>
+    </div>
+
+    <!-- المهام -->
+    <div class="tasks-header">
+        <h3><i class="fas fa-tasks"></i> المهام</h3>
+        <div class="tasks-progress" id="tasks-progress">0/3 مكتملة</div>
+    </div>
+    <div id="tasks-container"></div>
+</div>
+
+<!-- مودال التحقق للمتابعة والإعجاب -->
+<div class="modal-overlay" id="tiktok-verify-modal">
+    <div class="modal-box">
+        <div class="modal-icon" id="tiktok-modal-icon"><i class="fas fa-user-check"></i></div>
+        <div class="modal-title" id="tiktok-modal-title">تحقق من المتابعة</div>
+        <div class="modal-text" id="tiktok-modal-text">
+            قم بفتح تطبيق TikTok وابحث عن:
+            <div class="share-code-container" style="cursor: pointer;" onclick="copyToClipboard('@bldaxx_12')">
+                <div style="color: var(--primary); font-weight: bold; font-size: 1.2rem;">@bldaxx_12</div>
+                <div style="font-size: 0.8rem; color: var(--primary);">انقر لنسخ اسم المستخدم</div>
+            </div>
+            بعد إكمال المهمة، أجب على السؤال التالي:
+        </div>
+        <div id="tiktok-modal-content"></div>
+        <div style="margin: 15px 0; text-align: center;">
+            <div style="font-size: 1.5rem; color: var(--gold);" id="tiktok-timer-display">45</div>
+            <div style="font-size: 0.8rem; color: #b0b8cc;">ثانية متبقية</div>
+        </div>
+        <button onclick="closeTikTokModal()" class="btn" style="width: 100%; margin-top: 10px; background: rgba(255,255,255,0.1);">
+            <i class="fas fa-times"></i> إلغاء
+        </button>
+    </div>
+</div>
+
+<!-- مودال التحقق للمشاركة -->
+<div class="modal-overlay" id="share-verify-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fab fa-whatsapp"></i></div>
+        <div class="modal-title">تحقق من المشاركة</div>
+        <div class="modal-text">
+            قم بمشاركة رابط المسابقة مع 3 أصدقاء على واتساب
+            <div class="share-code-container">
+                <div style="margin-bottom: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                    سيتم إرسال رسالة تحتوي على رابط خاص للمسابقة
+                </div>
+            </div>
+        </div>
+        <div id="share-modal-content"></div>
+        <div style="margin: 15px 0; text-align: center;">
+            <div style="font-size: 1.5rem; color: var(--gold);" id="share-timer-display">45</div>
+            <div style="font-size: 0.8rem; color: #b0b8cc;">ثانية متبقية</div>
+        </div>
+        <button onclick="closeShareModal()" class="btn" style="width: 100%; margin-top: 10px; background: rgba(255,255,255,0.1);">
+            <i class="fas fa-times"></i> إلغاء
+        </button>
+    </div>
+</div>
+
+<!-- مودال الفوز -->
+<div class="modal-overlay" id="winner-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-trophy" style="color: var(--gold);"></i></div>
+        <div class="modal-title" style="color: var(--gold);">تهانينا!</div>
+        <div class="modal-text" id="winner-message">
+            <div class="amount-large" id="winner-amount">500.000 دينار</div>
+        </div>
+        <div class="verification-hint"><i class="fas fa-info-circle"></i> الجائزة ترسل خلال 48 ساعة</div>
+        <button onclick="closeWinnerModal()" class="btn btn-gold" style="width: 100%;">
+            <i class="fas fa-gift"></i> تم
+        </button>
+    </div>
+</div>
+
+<!-- مودال لم تفز -->
+<div class="modal-overlay" id="not-winner-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-times-circle" style="color: var(--error);"></i></div>
+        <div class="modal-title" style="color: var(--error);">عذراً</div>
+        <div class="modal-text">لم تفز اليوم، حاول غداً</div>
+        <div class="verification-hint"><i class="fas fa-lightbulb"></i> أكمل المهام لزيادة فرصك</div>
+        <button onclick="closeNotWinnerModal()" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-redo"></i> حاول غداً
+        </button>
+    </div>
+</div>
+
+<!-- مودال فوز البنك -->
+<div class="modal-overlay" id="bank-winner-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-piggy-bank" style="color: var(--bank);"></i></div>
+        <div class="modal-title" style="color: var(--bank);">تهانينا!</div>
+        <div class="modal-text" id="bank-winner-message">
+            <div class="amount-large" id="bank-winner-amount">0 دينار</div>
+        </div>
+        <button onclick="closeBankWinnerModal()" class="btn btn-bank" style="width: 100%;">
+            <i class="fas fa-check"></i> تم
+        </button>
+    </div>
+</div>
+
+<!-- إشعارات -->
+<div id="toast-container"></div>
+
+<script>
+// ===== إعدادات التطبيق =====
+const CONFIG = {
+    TIKTOK_USERNAME: "@bldaxx_12",
+    TIKTOK_PROFILE_COLOR: "أزرق",
+    TIKTOK_CONTENT_TYPE: "برمجة وتطوير",
+    ARABIC_DAYS: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
+    VERIFICATION_TIME: 45,
+    WIN_PROBABILITY: 0.001,
+    BANK_WIN_PROBABILITY: 0.5,
+    REQUIRED_TASKS_FOR_WINNER_CHECK: 3,
+    BANK_SAVINGS_PERCENTAGE: 0.5,
+    DAILY_PRIZE_AMOUNTS: [
+        500000,  // 500.000 دينار
+        750000,  // 750.000 دينار
+        1000000, // 1.000.000 دينار
+        250000,  // 250.000 دينار
+        350000,  // 350.000 دينار
+        600000,  // 600.000 دينار
+        450000   // 450.000 دينار
+    ]
+};
+
+// ===== بيانات المهام =====
+const TASKS = [
+    { 
+        id: "follow", 
+        title: "متابعة @bldaxx_12", 
+        description: "تابع الحساب على TikTok", 
+        points: 1500, 
+        icon: "fas fa-user-plus", 
+        hint: "ابحث عن الحساب وقم بمتابعته",
+        type: "tiktok",
+        question: "ما هو لون صورة البروفايل للحساب؟",
+        options: ["أحمر", "أزرق", "أسود", "أخضر"],
+        correctAnswer: 1
+    },
+    { 
+        id: "like", 
+        title: "إعجاب بفيديوهات", 
+        description: "أعجب بـ 3 فيديوهات", 
+        points: 1000, 
+        icon: "fas fa-heart", 
+        hint: "أعجب بثلاثة فيديوهات مختلفة",
+        type: "tiktok",
+        question: "ما هو نوع المحتوى الرئيسي للحساب؟",
+        options: ["العاب فيديو", "برمجة وتطوير", "موسيقى", "طبخ"],
+        correctAnswer: 1
+    },
+    { 
+        id: "share_whatsapp", 
+        title: "مشاركة واتساب", 
+        description: "شارك مع 3 أصدقاء", 
+        points: 800, 
+        icon: "fab fa-whatsapp", 
+        hint: "شارك رابط المسابقة",
+        type: "share"
+    }
+];
+
+// ===== حالة التطبيق =====
+let userData = {
+    name: "",
+    points: 0,
+    bankPoints: 0,
+    completedTasks: {},
+    oneTimeTasks: {},
+    dailyPrizes: {},
+    weeklyBank: {
+        startDate: null,
+        endDate: null,
+        points: 0,
+        claimed: false
+    },
+    stats: { 
+        totalTasks: 0, 
+        dailyTasks: 0, 
+        lastLogin: null, 
+        registrationDate: null,
+        lastTaskReset: null
+    }
+};
+
+let currentTask = null;
+let verificationTimer = null;
+let timeLeft = CONFIG.VERIFICATION_TIME;
+
+// ===== دوال المساعدة =====
+function getTodayString() {
+    const date = new Date();
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
+function getWeekNumber() {
+    const date = new Date();
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
+
+function getRandomDailyPrize() {
+    const randomIndex = Math.floor(Math.random() * CONFIG.DAILY_PRIZE_AMOUNTS.length);
+    return CONFIG.DAILY_PRIZE_AMOUNTS[randomIndex];
+}
+
+function formatTND(amount) {
+    // تنسيق المبلغ مثل 500.000 دينار
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function saveUserData() {
+    try {
+        userData.stats.lastLogin = new Date().toISOString();
+        localStorage.setItem('tiktok_tunisia_user', JSON.stringify(userData));
+        return true;
+    } catch (e) {
+        console.error('خطأ في الحفظ:', e);
+        return false;
+    }
+}
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    const icons = { 
+        success: 'fas fa-check-circle', 
+        error: 'fas fa-exclamation-circle', 
+        warning: 'fas fa-exclamation-triangle', 
+        info: 'fas fa-info-circle' 
+    };
+    
+    toast.innerHTML = `<i class="${icons[type]}"></i><span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// ===== الدوال الرئيسية =====
+function initApp() {
+    loadUserData();
+    checkAndResetTasks();
+    checkAndResetBank();
+    updateUI();
+}
+
+function loadUserData() {
+    try {
+        const saved = localStorage.getItem('tiktok_tunisia_user');
+        if (saved) {
+            userData = JSON.parse(saved);
+            
+            const today = getTodayString();
+            if (!userData.dailyPrizes[today]) {
+                userData.dailyPrizes[today] = { 
+                    claimed: false, 
+                    amount: getRandomDailyPrize()
+                };
+            }
+            
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            updateUI();
+            showToast(`مرحباً بعودتك ${userData.name}!`, 'success');
+            return true;
+        }
+    } catch (e) {
+        localStorage.removeItem('tiktok_tunisia_user');
+    }
+    return false;
+}
+
+function checkAndResetTasks() {
+    const today = getTodayString();
+    if (userData.stats.lastTaskReset !== today) {
+        userData.completedTasks[today] = [];
+        userData.stats.lastTaskReset = today;
+        userData.stats.dailyTasks = 0;
+        saveUserData();
+        if (userData.name) {
+            showToast('تم تجديد المهام اليومية!', 'info');
+        }
+    }
+}
+
+function checkAndResetBank() {
+    const currentWeek = getWeekNumber();
+    if (!userData.weeklyBank.startDate || userData.weeklyBank.startWeek !== currentWeek) {
+        const nextSunday = new Date();
+        nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+        
+        userData.weeklyBank = {
+            startDate: new Date().toISOString(),
+            startWeek: currentWeek,
+            endDate: nextSunday.toISOString(),
+            points: userData.bankPoints,
+            claimed: false
+        };
+        saveUserData();
+    }
+}
+
+function login() {
+    const nameInput = document.getElementById('user-name');
+    const name = nameInput.value.trim();
+    
+    if (!name || name.length < 3) {
+        showToast('أدخل اسم صحيح (3 أحرف على الأقل)', 'error');
+        nameInput.focus();
+        return;
+    }
+    
+    if (!userData.name) {
+        userData = {
+            name: name,
+            points: 0,
+            bankPoints: 0,
+            completedTasks: {},
+            oneTimeTasks: {},
+            dailyPrizes: {},
+            weeklyBank: {
+                startDate: new Date().toISOString(),
+                startWeek: getWeekNumber(),
+                endDate: new Date(new Date().setDate(new Date().getDate() + (7 - new Date().getDay()))).toISOString(),
+                points: 0,
+                claimed: false
+            },
+            stats: { 
+                totalTasks: 0, 
+                dailyTasks: 0, 
+                lastLogin: new Date().toISOString(), 
+                registrationDate: new Date().toISOString(),
+                lastTaskReset: getTodayString()
+            }
+        };
+        
+        userData.dailyPrizes[getTodayString()] = { 
+            claimed: false, 
+            amount: getRandomDailyPrize()
+        };
+    } else {
+        userData.name = name;
+    }
+    
+    saveUserData();
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    updateUI();
+    showToast(`مرحباً ${userData.name}!`, 'success');
+}
+
+function updateUI() {
+    document.getElementById('name-tag').textContent = userData.name;
+    document.getElementById('points-count').textContent = userData.points.toLocaleString('ar-TN');
+    
+    // تحديث البنك
+    document.getElementById('bank-amount').innerHTML = `${formatTND(userData.bankPoints)} <span class="tnd-symbol">دينار</span>`;
+    const endDate = new Date(userData.weeklyBank.endDate);
+    const now = new Date();
+    const timeLeft = endDate - now;
+    if (timeLeft > 0) {
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        document.getElementById('bank-timer').textContent = `ينتهي بعد: ${days} يوم و ${hours} ساعة`;
+        document.getElementById('bank-progress-fill').style.width = `${((7 - days) / 7) * 100}%`;
+        document.getElementById('check-bank-btn').disabled = days > 0;
+    } else {
+        document.getElementById('bank-timer').textContent = 'انتهى الوقت!';
+        document.getElementById('check-bank-btn').disabled = false;
+    }
+    
+    // تحديث الجائزة اليومية
+    const today = getTodayString();
+    const todayPrize = userData.dailyPrizes[today];
+    document.getElementById('day-name').textContent = `اليوم: ${CONFIG.ARABIC_DAYS[new Date().getDay()]}`;
+    document.getElementById('prize-amount').innerHTML = `${formatTND(todayPrize.amount)} <span class="tnd-symbol">دينار</span>`;
+    document.getElementById('contest-number').textContent = 85700 + new Date().getDate();
+    
+    const completedCount = (userData.completedTasks[today] || []).length + Object.keys(userData.oneTimeTasks || {}).length;
+    const claimBtn = document.getElementById('check-winner-btn');
+    
+    if (todayPrize.claimed) {
+        claimBtn.innerHTML = '<i class="fas fa-check"></i> تم التحقق اليوم';
+        claimBtn.disabled = true;
+        claimBtn.className = 'btn';
+        claimBtn.style.background = '#555';
+    } else {
+        const canCheck = completedCount >= CONFIG.REQUIRED_TASKS_FOR_WINNER_CHECK;
+        claimBtn.disabled = !canCheck;
+        claimBtn.className = canCheck ? 'btn btn-gold' : 'btn';
+        claimBtn.innerHTML = canCheck ? 
+            '<i class="fas fa-trophy"></i> تحقق إذا فزت' :
+            `<i class="fas fa-lock"></i> أكمل المهام (${completedCount}/${CONFIG.REQUIRED_TASKS_FOR_WINNER_CHECK})`;
+    }
+    
+    // تحديث المهام
+    updateTasksUI();
+}
+
+function updateTasksUI() {
+    const container = document.getElementById('tasks-container');
+    const today = getTodayString();
+    const completedToday = userData.completedTasks[today] || [];
+    const oneTimeCompleted = userData.oneTimeTasks || {};
+    
+    const completedCount = completedToday.length + Object.keys(oneTimeCompleted).length;
+    document.getElementById('tasks-progress').textContent = `${completedCount}/${TASKS.length} مكتملة`;
+    
+    container.innerHTML = TASKS.map(task => {
+        const isCompleted = completedToday.includes(task.id) || oneTimeCompleted[task.id];
+        
+        return `
+            <div class="task-card ${isCompleted ? 'completed' : ''}">
+                <div class="task-info">
+                    <div class="task-icon">
+                        <i class="${task.icon}"></i>
+                    </div>
+                    <div class="task-details">
+                        <h4>${task.title}</h4>
+                        <div class="task-points">+${task.points.toLocaleString('ar-TN')} نقطة</div>
+                        <div class="task-hint">${task.hint}</div>
+                    </div>
+                </div>
+                <button onclick="startTask('${task.id}')" class="btn ${isCompleted ? '' : 'btn-primary'} btn-small" ${isCompleted ? 'disabled' : ''}>
+                    ${isCompleted ? '<i class="fas fa-check"></i>' : '<i class="fas fa-play"></i>'}
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function startTask(taskId) {
+    const task = TASKS.find(t => t.id === taskId);
+    if (!task) return;
+    
+    currentTask = task;
+    timeLeft = CONFIG.VERIFICATION_TIME;
+    
+    if (task.type === 'tiktok') {
+        showTikTokVerification(task);
+    } else if (task.type === 'share') {
+        showShareVerification(task);
+    }
+}
+
+function showTikTokVerification(task) {
+    const modal = document.getElementById('tiktok-verify-modal');
+    const icon = document.getElementById('tiktok-modal-icon');
+    const title = document.getElementById('tiktok-modal-title');
+    const text = document.getElementById('tiktok-modal-text');
+    const content = document.getElementById('tiktok-modal-content');
+    const timerDisplay = document.getElementById('tiktok-timer-display');
+    
+    icon.innerHTML = `<i class="${task.icon}"></i>`;
+    title.textContent = `تحقق من ${task.title}`;
+    timerDisplay.textContent = timeLeft;
+    
+    content.innerHTML = `
+        <div class="verification-hint">
+            <i class="fas fa-question-circle"></i>
+            <span>${task.question}</span>
+        </div>
+        <div class="question-options">
+            ${task.options.map((option, index) => `
+                <button class="option-btn" onclick="verifyTikTokQuestion(${index})">${option}</button>
+            `).join('')}
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    startVerificationTimer('tiktok');
+}
+
+function showShareVerification(task) {
+    const modal = document.getElementById('share-verify-modal');
+    const content = document.getElementById('share-modal-content');
+    const timerDisplay = document.getElementById('share-timer-display');
+    
+    timerDisplay.textContent = timeLeft;
+    
+    // إنشاء رابط فريد مع معرف المستخدم
+    const uniqueLink = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(userData.name)}`;
+    
+    // نص الرسالة الجاهزة
+    const message = `🎉 *انضم إلى مسابقة تيك توك تونس لربح جوائز مالية ضخمة!* 🏆
+
+💰 *الجوائز اليومية:*
+• 500.000 دينار تونسي 🏅
+• 750.000 دينار تونسي 🥇
+• 1.000.000 دينار تونسي 👑
+
+🏦 *بنك التوفير الأسبوعي:*
+• فرصة 50% للفوز بجميع النقاط
+• احتفظ بـ 50% من نقاط المهام
+
+📱 *شارك الآن عبر الرابط:*
+${uniqueLink}
+
+🎁 *كل مشاركة تمنحك 800 نقطة!*
+⏰ *المسابقة محدودة الوقت!*
+
+#تيك_توك_تونس #مسابقة #ربح_المال_الحقيقي`.replace(/\n/g, '%0a');
+
+    content.innerHTML = `
+        <div style="margin: 15px 0;">
+            <button onclick="openWhatsapp('${message}')" class="btn btn-success" style="width: 100%; margin-bottom: 10px;">
+                <i class="fab fa-whatsapp"></i> افتح واتساب وأرسل الرسالة
+            </button>
+            <div style="font-size: 0.8rem; color: #b0b8cc; text-align: center; margin-top: 10px;">
+                <i class="fas fa-share-alt"></i> أرسل الرسالة لـ 3 أصدقاء
+            </div>
+        </div>
+        <div class="verification-hint">
+            <i class="fas fa-question-circle"></i>
+            <span>بعد إرسال الرسالة، أدخل <strong>الاسم الأول</strong> من رابط المسابقة المرسل</span>
+        </div>
+        <input type="text" class="text-input" id="share-code-input" placeholder="أدخل أول حرف من الرابط">
+        <div style="margin: 10px 0; font-size: 0.8rem; color: #b0b8cc;">
+            مثال: إذا كان الرابط يبدأ بـ <strong>https</strong>، أدخل <strong>h</strong>
+        </div>
+        <button onclick="verifyShareTask()" class="btn btn-success" style="width: 100%;">
+            <i class="fas fa-check"></i> تأكيد المشاركة
+        </button>
+    `;
+    
+    modal.style.display = 'flex';
+    startVerificationTimer('share');
+}
+
+function startVerificationTimer(type) {
+    if (verificationTimer) clearInterval(verificationTimer);
+    
+    verificationTimer = setInterval(() => {
+        timeLeft--;
+        const timerDisplay = document.getElementById(`${type}-timer-display`);
+        if (timerDisplay) {
+            timerDisplay.textContent = timeLeft;
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(verificationTimer);
+            if (type === 'tiktok') {
+                closeTikTokModal();
+            } else {
+                closeShareModal();
+            }
+            showToast('انتهى وقت التحقق', 'warning');
+        }
+    }, 1000);
+}
+
+function closeTikTokModal() {
+    document.getElementById('tiktok-verify-modal').style.display = 'none';
+    
+    if (verificationTimer) {
+        clearInterval(verificationTimer);
+        verificationTimer = null;
+    }
+    
+    currentTask = null;
+}
+
+function closeShareModal() {
+    document.getElementById('share-verify-modal').style.display = 'none';
+    
+    if (verificationTimer) {
+        clearInterval(verificationTimer);
+        verificationTimer = null;
+    }
+    
+    currentTask = null;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('تم نسخ اسم المستخدم', 'success');
+    });
+}
+
+function openWhatsapp(message) {
+    const url = `https://wa.me/?text=${message}`;
+    window.open(url, '_blank');
+    showToast('تم فتح واتساب. أرسل الرسالة لـ 3 أصدقاء', 'info');
+}
+
+function verifyTikTokQuestion(selectedIndex) {
+    if (!currentTask) return;
+    
+    if (selectedIndex === currentTask.correctAnswer) {
+        completeTask(currentTask.id);
+    } else {
+        showToast('إجابة خاطئة، حاول مرة أخرى', 'error');
+    }
+}
+
+function verifyShareTask() {
+    if (!currentTask) return;
+    
+    const input = document.getElementById('share-code-input');
+    const enteredCode = input.value.trim().toLowerCase();
+    
+    if (!enteredCode) {
+        showToast('أدخل الرمز المطلوب', 'error');
+        return;
+    }
+    
+    // التحقق من أن الرمز المدخل هو أول حرف من رابط (h لـ http/https)
+    if (enteredCode === 'h' || enteredCode === 'ا' || enteredCode === 'ح') {
+        completeTask(currentTask.id);
+    } else {
+        showToast('الرمز غير صحيح. تأكد من إدخال أول حرف من رابط المسابقة', 'error');
+        input.value = '';
+        input.focus();
+    }
+}
+
+function completeTask(taskId) {
+    const today = getTodayString();
+    
+    // التحقق من المهام لمرة واحدة
+    if (taskId === 'follow' || taskId === 'share_whatsapp') {
+        if (userData.oneTimeTasks[taskId]) {
+            showToast('لقد أكملت هذه المهمة من قبل', 'warning');
+            if (taskId.includes('share')) {
+                closeShareModal();
+            } else {
+                closeTikTokModal();
+            }
+            return;
+        }
+        userData.oneTimeTasks[taskId] = true;
+    } else {
+        if (!userData.completedTasks[today]) {
+            userData.completedTasks[today] = [];
+        }
+        
+        if (userData.completedTasks[today].includes(taskId)) {
+            showToast('لقد أكملت هذه المهمة اليوم', 'warning');
+            closeTikTokModal();
+            return;
+        }
+        userData.completedTasks[today].push(taskId);
+    }
+    
+    // حساب النقاط
+    const task = TASKS.find(t => t.id === taskId);
+    const pointsForUser = Math.floor(task.points * (1 - CONFIG.BANK_SAVINGS_PERCENTAGE));
+    const pointsForBank = task.points - pointsForUser;
+    
+    userData.points += pointsForUser;
+    userData.bankPoints += pointsForBank;
+    userData.stats.totalTasks++;
+    userData.stats.dailyTasks++;
+    
+    if (taskId.includes('share')) {
+        closeShareModal();
+    } else {
+        closeTikTokModal();
+    }
+    
+    saveUserData();
+    updateUI();
+    
+    showToast(`تم! حصلت على ${pointsForUser.toLocaleString('ar-TN')} نقطة (${pointsForBank} للبنك)`, 'success');
+}
+
+function checkIfWinner() {
+    const today = getTodayString();
+    const todayPrize = userData.dailyPrizes[today];
+    
+    if (todayPrize.claimed) {
+        showToast('لقد تحققت اليوم بالفعل', 'warning');
+        return;
+    }
+    
+    const completedCount = (userData.completedTasks[today] || []).length + Object.keys(userData.oneTimeTasks || {}).length;
+    
+    if (completedCount < CONFIG.REQUIRED_TASKS_FOR_WINNER_CHECK) {
+        showToast('أكمل جميع المهام أولاً', 'error');
+        return;
+    }
+    
+    todayPrize.claimed = true;
+    saveUserData();
+    updateUI();
+    
+    // فرصة الفوز ضئيلة جداً (0.1%)
+    const isWinner = Math.random() < CONFIG.WIN_PROBABILITY;
+    
+    if (isWinner) {
+        const prizeAmount = todayPrize.amount;
+        document.getElementById('winner-amount').textContent = `${formatTND(prizeAmount)} دينار`;
+        document.getElementById('winner-modal').style.display = 'flex';
+    } else {
+        document.getElementById('not-winner-modal').style.display = 'flex';
+    }
+}
+
+function checkBankWinner() {
+    if (userData.weeklyBank.claimed) {
+        showToast('لقد تحققت من البنك هذا الأسبوع', 'warning');
+        return;
+    }
+    
+    if (userData.bankPoints === 0) {
+        showToast('لا توجد نقاط في البنك', 'error');
+        return;
+    }
+    
+    userData.weeklyBank.claimed = true;
+    
+    // 50% فرصة للفوز بالبنك
+    const isWinner = Math.random() < CONFIG.BANK_WIN_PROBABILITY;
+    
+    if (isWinner) {
+        userData.points += userData.bankPoints;
+        document.getElementById('bank-winner-amount').textContent = `${formatTND(userData.bankPoints)} دينار`;
+        document.getElementById('bank-winner-modal').style.display = 'flex';
+    } else {
+        // حتى لو لم يفز، نخبره بالمبلغ الذي كان في البنك
+        document.getElementById('bank-winner-amount').textContent = `${formatTND(userData.bankPoints)} دينار`;
+        document.getElementById('bank-winner-modal').style.display = 'flex';
+    }
+    
+    userData.bankPoints = 0;
+    saveUserData();
+    updateUI();
+}
+
+function closeWinnerModal() {
+    document.getElementById('winner-modal').style.display = 'none';
+}
+
+function closeNotWinnerModal() {
+    document.getElementById('not-winner-modal').style.display = 'none';
+}
+
+function closeBankWinnerModal() {
+    document.getElementById('bank-winner-modal').style.display = 'none';
+}
+
+// ===== تهيئة التطبيق =====
+document.addEventListener('DOMContentLoaded', function() {
+    initApp();
+    
+    document.getElementById('user-name').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            login();
+        }
+    });
+});
+</script>
+</body>
+</html>
