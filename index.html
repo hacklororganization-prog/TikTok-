@@ -1181,23 +1181,65 @@ function initApp() {
 function loadUserData() {
     try {
         const saved = localStorage.getItem('tiktok_tunisia_user');
-        if (saved) {
-            userData = JSON.parse(saved);
-            
-            const today = getTodayString();
-            if (!userData.dailyPrizes[today]) {
-                userData.dailyPrizes[today] = { 
-                    claimed: false, 
-                    amount: getRandomDailyPrize()
-                };
-            }
-            
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            updateUI();
-            showToast(`مرحباً بعودتك ${escapeHtml(userData.name)}!`, 'success');
-            return true;
+        if (!saved) {
+            return false; // لا توجد بيانات مخزنة
         }
+        
+        const parsed = JSON.parse(saved);
+        
+        // التحقق من وجود اسم مستخدم صالح
+        if (!parsed.name || typeof parsed.name !== 'string' || parsed.name.trim().length < 3) {
+            console.log('لا يوجد اسم مستخدم صالح، حذف البيانات القديمة');
+            localStorage.removeItem('tiktok_tunisia_user');
+            return false;
+        }
+        
+        // دمج البيانات
+        userData = {
+            name: parsed.name || "",
+            points: parsed.points || 0,
+            bankPoints: parsed.bankPoints || 0,
+            completedTasks: parsed.completedTasks || {},
+            oneTimeTasks: parsed.oneTimeTasks || {},
+            dailyPrizes: parsed.dailyPrizes || {},
+            weeklyBank: parsed.weeklyBank || {
+                startDate: new Date().toISOString(),
+                startWeek: getWeekNumber(),
+                endDate: new Date(new Date().setDate(new Date().getDate() + (7 - new Date().getDay()))).toISOString(),
+                points: 0,
+                claimed: false
+            },
+            stats: parsed.stats || { 
+                totalTasks: 0, 
+                dailyTasks: 0, 
+                lastLogin: null, 
+                registrationDate: new Date().toISOString(),
+                lastTaskReset: getTodayString()
+            },
+            attempts: parsed.attempts || {},
+            waitUntil: parsed.waitUntil || {}
+        };
+        
+        // إعادة تعيين البنك إذا لزم الأمر
+        checkAndResetBank();
+        
+        const today = getTodayString();
+        if (!userData.dailyPrizes[today]) {
+            userData.dailyPrizes[today] = { 
+                claimed: false, 
+                amount: getRandomDailyPrize()
+            };
+        }
+        
+        // تحديث تاريخ آخر تسجيل دخول
+        userData.stats.lastLogin = new Date().toISOString();
+        
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        updateUI();
+        showToast(`مرحباً بعودتك ${escapeHtml(userData.name)}!`, 'success');
+        return true;
+        
     } catch (e) {
         console.error('خطأ في تحميل البيانات:', e);
         try {
@@ -1205,9 +1247,9 @@ function loadUserData() {
         } catch (e2) {
             console.error('فشل في حذف البيانات التالفة:', e2);
         }
+        return false;
     }
-    return false;
-}
+    }
 
 function checkAndResetTasks() {
     const today = getTodayString();
